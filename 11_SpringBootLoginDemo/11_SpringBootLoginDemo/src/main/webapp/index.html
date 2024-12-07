@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>LOGIN Page</title>
+	</head>
+	<body>
+		<h1>Enter the Credentials to LogIn!</h1>
+		<br/>
+		Username: <input type = "text" id = "un"/>
+		<br/>
+		Password: <input type = "text" id = "pw"/>
+		<br/>
+		<button onclick="login()">Login</button>
+		
+	</body>
+</html>
+<script type="text/javascript">
+	function login()
+	{
+		var data = JSON.stringify({
+			username:un.value,
+			password:pw.value
+		});
+		var url = "http://localhost:8080/user/validate";
+		callApi("POST",url,data,getResponse);
+	}
+	//Handle the Response
+	function getResponse(response) {
+		alert(response);
+	}
+	//CALL API SERVICE
+	function callApi(METHOD, URL, DATA, responseHandler){
+		var options;
+		if(METHOD == "GET" || METHOD == "DELETE")//for GET & DELETE, No need of JSON Input from RequestBody
+			options = {method: METHOD, headers:{'Content-Type':'application/json'}};
+		else//for PUT(UPDATE) & POST(INSERT), Need of JSON Input from Requestbody
+			options = {method: METHOD, headers:{'Content-Type':'application/json'}, body: DATA};
+		fetch(URL, options)//predefined method in JS
+			.then(response => {
+				if(!response.ok)
+					throw new Error(response.status + ": " + response.statusText);
+				return response.text();
+			})
+			.then(data => responseHandler(data))
+			.catch(error => alert(error));
+	}
+</script>
